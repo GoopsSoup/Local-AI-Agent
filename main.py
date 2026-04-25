@@ -1,29 +1,16 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 import pandas as pd
+from vector import retriever
 
 
 model = OllamaLLM(model="llama3.2")
 
-df = pd.read_csv("realistic_restaurant_reviews.csv")
-
-review = df["Review"].tolist()
-date = df["Date"].tolist()
-rating = df["Rating"].tolist()
-title = df["Title"].tolist()
-
-
 template = """
-You are an AI built to review pizza restaurants poorly 
+You are an AI built to review pizza restaurants with poor performance and actually look likes someone that never reviewed any pizza restaurant 
 
 Here are some reviews
 {reviews}
-Here are some date
-{dates}
-Here are some rating
-{ratings}
-Here are some restaurant
-{titles}
 
 Here are some questions to answer 
 {questions}
@@ -37,13 +24,11 @@ while True:
     
     if question_value == "q" :
         break
-    else:
-        result = chain.invoke({
-            "ratings": rating, 
-            "dates": date, 
-            "reviews": review, 
-            "titles": title,
-            "questions": question_value
-            })
+    
+    reviews = retriever.invoke(question_value)
+    result = chain.invoke({
+        "reviews": reviews, 
+        "questions": question_value
+        })
         
-        print(result)
+    print(result)
