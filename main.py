@@ -26,8 +26,10 @@ while True:
         break
     
     reviews = retriever.invoke(question_value)
+    reviews_text = "\n\n".join([doc.page_content for doc in reviews])
+    
     result = chain.invoke({
-        "reviews": reviews, 
+        "reviews": reviews_text, 
         "questions": question_value
         })
         
